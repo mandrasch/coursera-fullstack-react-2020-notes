@@ -5,37 +5,48 @@ Instructor: Jogesh K. Muppala
 Associate Professor
 Department of Computer Science and Engineering (Hong Kong University of Science and Technology)
 
-## Atom Beautify
+*Notes created with MacDown*
 
-Choose atom-beautify or one of the other packages and click Install. Now you can use the default keybinding for atom-beautify CTRL + ALT + B to beautify your HTML ( CTRL + OPTION + B on a Mac)
+## Source code?
+
+Unfortunately Coursera Honors Code permits the open sharing of source code from this course (I guess mainly because of the assignment tasks which would be openly available in the web). Therefore I keep the source code in a private repository by now.
+
+## Atom Beautify: Indent Code 
+
+Code-Editor: [https://atom.io/](https://atom.io/)
+
+
+Choose [atom-beautify](https://atom.io/packages/atom-beautify) and click Install. Now you can use the default keybinding for atom-beautify CTRL + ALT + B to beautify your HTML ( CTRL + OPTION + B on a Mac)
 
 `CTRL` + `ALT` + `B`
 
-## Week 1: git-test/ with lite-server
+## Week 1: First project with lite-server
 
-NPM = node package manager
+- Lite server ([https://www.npmjs.com/package/lite-server](https://www.npmjs.com/package/lite-server)) is quite nice because it will act as little local webserver (like MAMP or XAMPP), but it watches the project directory and refreshes the browser if a file was edited
+- it is installed via `NPM = node package manager` from command line:
 
-npm init <initializer> can be used to set up a new or existing npm package.
-https://docs.npmjs.com/cli/init
+`npm init` <initializer> can be used to set up a new or existing npm package.
+[https://docs.npmjs.com/cli/init](https://www.npmjs.com/package/lite-server)
 
-1. npm init with index.html as entry point (instead index.js)
-2. Use lite server for HTML and save this to package.json info:
-npm install lite-server --save-dev
+1. `npm init` with index.html as entry point (instead index.js)
+2. Use lite server for development purposes (local testing) and install it with this info via:
+`npm install lite-server --save-dev`
 
-3. edit package.json
-
+3. edit package.json to use lite server to run the project locally:  
+```
 "scripts": {
   "lite":"lite-server",
   "start":"npm run lite",
   "test": "echo \"Error: no test specified\" && exit 1"
-},
+}
+```
 
-(In the video "lite" is below start, which results in an error (script not found)
-https://www.coursera.org/learn/bootstrap-4/lecture/L3Q8S/exercise-video-basics-of-node-js-and-npm at 14:00)
+4. Launch the project: `npm start`
 
-4. Launch it:
+*(regarding 3.: In the coursera video "lite" is below start, which results in an error (script not found)
+https://www.coursera.org/learn/bootstrap-4/lecture/L3Q8S/exercise-video-basics-of-node-js-and-npm at 14:00)*
 
-`npm start`
+
 
 ## Week1: bootstrap4/conFusion
 

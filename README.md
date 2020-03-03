@@ -9,16 +9,22 @@ Department of Computer Science and Engineering (Hong Kong University of Science 
 
 ## Source code?
 
-Unfortunately Coursera Honors Code permits the open sharing of source code from this course (I guess mainly because of the assignment tasks which would be openly available in the web). Therefore I keep the source code in a private repository by now.
+Unfortunately [Courseras Honor Code](https://learner.coursera.help/hc/en-us/articles/209818863) permits the open sharing of source code from this course (I guess mainly because of the assignment tasks which would be openly available in the web). Therefore I keep the source code in a private repository by now.
 
-## Atom Beautify: Indent Code 
+## Tools 
+
+### Atom & Atom Beautify: Indent Code 
 
 Code-Editor: [https://atom.io/](https://atom.io/)
-
 
 Choose [atom-beautify](https://atom.io/packages/atom-beautify) and click Install. Now you can use the default keybinding for atom-beautify CTRL + ALT + B to beautify your HTML ( CTRL + OPTION + B on a Mac)
 
 `CTRL` + `ALT` + `B`
+
+### Full page screen capture (Chrome)
+
+Nice plugin mentioned by instructor, it does not need permission to access every website 
+[](https://chrome.google.com/webstore/detail/full-page-screen-capture/fdpohaocaechififmbbbbbknoalclacl)
 
 ## Week 1: First project with lite-server
 
@@ -131,3 +137,71 @@ Found out about [https://atom.io/packages/v-bootstrap4](https://atom.io/packages
 
 `<div class="carousel-caption d-none d-md-block">`
 
+### Bootstrap uses jQuery for JS
+
+## Week4 
+
+### CSS Preprocessors
+
+- popular: Less, Sass, Scss, Stylus
+- bootstrap 4 is built with Sass, v3 used Less
+- goal: overcome pain points of CSS
+- nesting is supported
+
+`#header .logo {
+  width: 300px;
+}`
+
+becomes 
+
+```
+#header {
+  color: black;
+  .navigation {
+    font-size: 12px;
+  }
+  .logo {
+    width: 300px;
+  }
+}
+```
+
+- mixins: multiple props and values
+
+```
+.bordered {
+  border-top: dotted 1px black;
+  border-bottom: solid 2px black;
+}
+```
+
+```
+#menu a {
+  color: #111;
+  .bordered();
+}
+```
+
+- mixins support parameters
+- mathematical operations `height: $carousel-item-height*2`, color operations, etc.
+- import operation possible (import sass/less files)
+
+### Exercise: Less
+
+- Less = Leaner Style Sheets [http://lesscss.org/](http://lesscss.org/)
+
+Install and configuration of the node module for less:
+
+1. `sudo npm install -g less@2.7.2` (g = global installation)
+2. compiler "lessc" is now available an command line: `cd css` and use `lessc styles.less styles.css` (styles.css is generated from styles.less)
+
+### Exercise: Scss
+
+1. add as dev dependency for project `npm install --save-dev node-saas`
+2. open up package.json, node-saas is listed in dev dependencies
+3. add line to scripts `"scss": "node-sass -o css/ css/"` (-o = output directory, [input] and [output], both set to folder /css, see [https://www.npmjs.com/package/node-sass](https://www.npmjs.com/package/node-sass)) 
+4. run `npm run scss`to convert less to css files
+
+### Customize bootstraps SASS files
+
+- bootstraps sass files can be imported, see: [https://getbootstrap.com/docs/4.3/getting-started/theming/](https://getbootstrap.com/docs/4.3/getting-started/theming/)

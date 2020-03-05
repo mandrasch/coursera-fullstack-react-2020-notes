@@ -205,3 +205,220 @@ Install and configuration of the node module for less:
 ### Customize bootstraps SASS files
 
 - bootstraps sass files can be imported, see: [https://getbootstrap.com/docs/4.3/getting-started/theming/](https://getbootstrap.com/docs/4.3/getting-started/theming/)
+
+
+### Build scripts
+
+- Install onchange/watch modules
+
+`npm install --save-dev onchange@3.3.0 parallelshell@3.0.2`
+
+### npmchange
+
+> Use glob patterns to watch file sets and run a command when anything is added, changed or deleted.
+
+[https://www.npmjs.com/package/onchange](https://www.npmjs.com/package/parallelshell)
+
+Example:`onchange 'app/**/*.js' 'test/**/*.js' -- npm test`
+
+### parallelshell
+
+> This is a super simple npm module to run shell commands in parallel. All processes will share the same stdout/stderr, and if any command exits with a non-zero exit status, the rest are stopped and the exit code carries through.
+
+[https://www.npmjs.com/package/parallelshell](https://www.npmjs.com/package/parallelshell)
+
+### Configure watch (scss) + lite (package.json)
+
+In scripts{}-section:
+`"watch:scss": "onchange 'css/*.scss' -- npm run scss"`
+
+Add this as parallelshell command, also in script{}
+
+`"watch:all": "parallelshell 'npm run watch:scss' 'npm run lite'"`
+
+Start scripts needs modification at last to use parallelshell instead of only "run lite"
+
+`  "start": "npm run watch:all",`
+
+Ran into an issues ([https://github.com/darkguy2008/parallelshell/issues/57](https://github.com/darkguy2008/parallelshell/issues/57)), downgrade to 3.0.1 (`npm install --save-dev parallelshell@3.0.1`), worked afterwards.
+
+### Build distribution folder (only with node/usemin)
+
+- dist/ folder (will be deployed to web server
+- `npm install --save-dev rimraf@2.6.2` (module to delete folder completely) [https://www.npmjs.com/package/rimraf](https://www.npmjs.com/package/rimraf)
+- `sudo npm install -g install copyfiles@2.0.0` ([https://www.npmjs.com/package/copyfiles](https://www.npmjs.com/package/copyfiles))
+
+```
+	"clean":"rimraf dist",
+    "copyfonts":"copyfiles -f node_modules/font-awesome/fonts/* dist/fonts",
+```
+
+Test these changes:
+1. `npm run copyfonts` (check out dist folder)
+2. `npm run clean` (dist folder deleted)
+
+- install imagemin ([https://www.npmjs.com/package/imagemin](https://www.npmjs.com/package/imagemin)) for img optimization
+
+```
+sudo npm install -g imagemin-cli@3.0.0 --unsafe-perm=true --allow-root
+```
+
+Use it in package.json:
+
+`"imagemin":"imagemin img/* -o dist/img"`
+
+**Important: Add dist folder to .gitignore**
+
+#### usemin (+ cssmin + uglifyjs + htmlmin)
+
+```
+npm install --save-dev usemin-cli@0.5.1 cssmin@0.4.3 uglifyjs@2.4.11 htmlmin@0.0.7
+```
+
+> API version of usemin. For purists, those who doesn't use build tools like Grunt and Gulp, but just use node as their build tool.
+[https://www.npmjs.com/package/usemin](https://www.npmjs.com/package/usemin)
+
+usemin needs information in html source code (as html comment), which sections are relevant:
+
+```
+<!-- build:css css/main.css -->
+<link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css" />
+<link rel="stylesheet" href="node_modules/font-awesome/css/font-awesome.min.css" />
+<link rel="stylesheet" href="node_modules/bootstrap-social/bootstrap-social.css" />
+<link href="css/styles.css" rel="stylesheet" />
+<!-- enbuild -->
+```
+
+Use it in package.json:
+
+```
+"usemin":"usemin contactus.html -d dist --htmlmin -o dist/contactus.html && usemin aboutus.html -d dist --htmlmin -o dist/aboutus.html && usemin index.html -d d dist --htmlmin -o dist/index.html"
+```
+
+Finally put all parts together:
+
+1. clean dist folder
+2. copyfonts
+3. optimize images & output (-o) them to dist/img
+4. run usemin for css/js minifcation
+
+```
+"build":"npm run clean && npm run copyfonts && npm run imagemin && npm run usemin"
+```
+
+#### View in browser
+
+`npm run start` and navigate to [http://localhost:3000/dist/index.html](http://localhost:3000/dist/index.html)
+
+#### package.json
+
+Complete scripts{} in package.json
+```
+"scripts": {
+    "start": "npm run watch:all",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lite": "lite-server",
+    "scss": "node-sass -o css/ css/",
+    "watch:scss": "onchange 'css/*.scss' -- npm run scss",
+    "watch:all": "parallelshell 'npm run watch:scss' 'npm run lite'",
+    "clean": "rimraf dist",
+    "copyfonts": "copyfiles -f node_modules/font-awesome/fonts/* dist/fonts",
+    "imagemin": "imagemin img/* -o dist/img",
+    "usemin": "usemin contactus.html -d dist --htmlmin -o dist/contactus.html && usemin aboutus.html -d dist --htmlmin -o dist/aboutus.html && usemin index.html -d dist --htmlmin -o dist/index.html",
+    "build":"npm run clean && npm run copyfonts && npm run imagemin && npm run usemin"
+  },
+```
+
+### Task Runners (Grunt and Gulp)
+
+- Grunt: Configuration over Code (MIT license)
+- Gulp: Code over Configuration (MIT license)
+
+#### Grunt
+
+1. install `npm install -g grunt-cli@1.2.0`
+2. install locally `npm install grunt@1.0.2 --save-dev`
+3. Create 'gruntfile.js'
+4. `npm install --save-dev grunt-sass@2.1.0`
+5. `npm install --save-dev time-grunt@1.4.0 jit-grunt@0.10.0`
+
+jit-grunt
+> A JIT(Just In Time) plugin loader for Grunt.
+> Load time of Grunt does not slow down even if there are many plugins.
+
+time-grunt (deprececated)
+
+First add sass:
+
+```
+'use strict';
+
+module.exports = function (grunt) {
+    // Time how long tasks take. Can help when optimizing build times
+    require('time-grunt')(grunt);
+
+    // Automatically load required Grunt tasks
+    require('jit-grunt')(grunt);
+
+    // Define the configuration for all the tasks
+    grunt.initConfig({
+        sass: {
+            dist: {
+                files: {
+                    'css/styles.css': 'css/styles.scss'
+                }
+            }
+        }
+    });
+
+    grunt.registerTask('css', ['sass']);
+};
+```
+
+test it in CLI: `grunt css`
+
+6. `npm install --save-dev grunt-contrib-watch@1.0.0`
+7. `npm install --save-dev grunt-browser-sync@2.2.0`
+
+Add this to config as well in Gruntfile.js
+
+```
+// https://github.com/gruntjs/grunt-contrib-watch
+        watch: {
+          files: 'css/*.scss',
+          tasks: ['sass']
+        },
+        // https://www.npmjs.com/package/grunt-browser-sync
+        browserSync:{
+          dev: {
+            bsFiles:{
+              src:[
+                'css/*.css',
+                '*.html',
+                'js/*.js'
+              ]
+            },
+            options:{
+              watchTask: true,
+              server:{
+                baseDir: './'
+              }
+            }
+          }
+        }
+```
+
+Add task: 
+```
+grunt.registerTask('default'['browserSync','watch']);
+```
+
+Just run `grunt` afterwards to use default task
+
+## Other notes
+
+### GitHub desktop
+
+It is not a full featured Git-Client, going back to a previous commit is not possible currently ([https://stackoverflow.com/questions/34790794/going-back-to-a-previous-commit-in-github-desktop](https://stackoverflow.com/questions/34790794/going-back-to-a-previous-commit-in-github-desktop))
+
+Tried GitKraken, but it does not support private repos in free version.

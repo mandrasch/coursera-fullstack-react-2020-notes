@@ -414,6 +414,212 @@ grunt.registerTask('default'['browserSync','watch']);
 ```
 
 Just run `grunt` afterwards to use default task
+(Just change .scss file to see if it works)
+
+Now cleaning up is needed as well
+
+```
+npm install --save-dev grunt-contrib-copy@1.0.0  grunt-contrib-clean
+```
+
+Copy all html and font files to the dist folder:
+```
+copy:{
+  // copy html files
+  html:{
+    files:[{
+      expand:true,
+      dot:true,
+      cwd:'./',
+      src:['*.html'],
+      dest:'dist'
+    }]
+  },
+  // copy font files
+  fonts:{
+    files:[{
+      expand:true,
+      dot:true,
+      cwd:'node_modules/font-awesome',
+      src:['fonts/*.*'],
+      dest:'dist'
+    }]
+  }
+},
+```
+
+clean task:
+
+```
+clean:{
+  build:{
+    src:['dist/']
+  }
+}
+```
+
+imagemin:
+
+`npm install --save-dev grunt-contrib-imagemin@2.0.1`
+
+task in Gruntfile.js:
+
+```
+  imagemin: {
+            dynamic: {
+                files: [{
+                    expand: true,// Enable dynamic expansion
+                    cwd: './',// Src matches are relative to this path
+                    src: ['img/*.{png,jpg,gif}'], // Actual patterns to match
+                    dest: 'dist/' //Destination path prefix
+                }]
+            }
+        }
+```
+
+Put it all together:
+
+```
+grunt.registerTask('build',[
+      'clean',
+      'copy',
+      'imagemin']
+    );
+```
+
+CLI usage: `grunt build`
+
+#### Concact and minification:
+
+```
+npm install --save-dev grunt-contrib-concat@1.0.1 grunt-contrib-cssmin@2.2.1 grunt-contrib-htmlmin@2.4.0 grunt-contrib-uglify@3.3.0 grunt-filerev@2.3.1 grunt-usemin@3.1.1
+```
+
+Needs special configuration (otherwise breaks font-awesome4):
+
+```
+useminPrepare: {
+            foo: {
+                dest: 'dist',
+                src: ['contactus.html','aboutus.html','index.html']
+            },
+            options: {
+                flow: {
+                    steps: {
+                        css: ['cssmin'],
+                        js:['uglify']
+                    },
+                    post: {
+                        css: [{
+                            name: 'cssmin',
+                            createConfig: function (context, block) {
+                            var generated = context.options.generated;
+                                generated.options = {
+                                    keepSpecialComments: 0, rebase: false
+                                };
+                            }       
+                        }]
+                    }
+                }
+            }
+        },
+```
+
+```
+// Concat
+        concat: {
+            options: {
+                separator: ';'
+            },
+  
+            // dist configuration is provided by useminPrepare
+            dist: {}
+        },
+
+        // Uglify
+        uglify: {
+            // dist configuration is provided by useminPrepare
+            dist: {}
+        },
+
+        cssmin: {
+            dist: {}
+        },
+
+        // Filerev
+        filerev: {
+            options: {
+                encoding: 'utf8',
+                algorithm: 'md5',
+                length: 20
+            },
+  
+            release: {
+            // filerev:release hashes(md5) all assets (images, js and css )
+            // in dist directory
+                files: [{
+                    src: [
+                        'dist/js/*.js',
+                        'dist/css/*.css',
+                    ]
+                }]
+            }
+        },
+  
+        // Usemin
+        // Replaces all assets with their revved version in html and css files.
+        // options.assetDirs contains the directories for finding the assets
+        // according to their relative paths
+        usemin: {
+            html: ['dist/contactus.html','dist/aboutus.html','dist/index.html'],
+            options: {
+                assetsDirs: ['dist', 'dist/css','dist/js']
+            }
+        },
+
+        htmlmin: {                                         // Task
+            dist: {                                        // Target
+                options: {                                 // Target options
+                    collapseWhitespace: true
+                },
+                files: {                                   // Dictionary of files
+                    'dist/index.html': 'dist/index.html',  // 'destination': 'source'
+                    'dist/contactus.html': 'dist/contactus.html',
+                    'dist/aboutus.html': 'dist/aboutus.html',
+                }
+            }
+        }
+```
+
+- filerev: adds extension to main name, prevents cache-problems in browser ([https://www.npmjs.com/package/grunt-filerev](https://www.npmjs.com/package/grunt-filerev) / deprecated)
+
+Change header of Gruntfile.js and add build task at the bottom:
+
+```
+require('jit-grunt')(grunt, {
+  useminPrepare: 'grunt-usemin'
+});
+
+grunt.registerTask('build', [
+    'clean',
+    'copy',
+    'imagemin',
+    'useminPrepare',
+    'concat',
+    'cssmin',
+    'uglify',
+    'filerev',
+    'usemin',
+    'htmlmin'
+]);
+```
+
+Execute: `grunt build`, js file is now called "bootstrap4/conFusion/dist/js/main.721586b4775c69a7ec1b.js" (filerev)
+
+Preview it: `npm run lite`
+and navigate to [http://localhost:3000/dist/index.html](http://localhost:3000/dist/index.html)
+
+
 
 ## Other notes
 

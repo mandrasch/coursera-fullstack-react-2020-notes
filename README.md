@@ -1,9 +1,7 @@
-# Personal notes
+# Personal MOOC-notes "Front-End Web UI Frameworks and Tools: Bootstrap 4"
 
-Course: [https://www.coursera.org/learn/bootstrap-4/home/welcome](https://atom.io/packages/v-bootstrap4)
-Instructor: Jogesh K. Muppala 
-Associate Professor
-Department of Computer Science and Engineering (Hong Kong University of Science and Technology)
+- Course: [https://www.coursera.org/learn/bootstrap-4/home/welcome](https://www.coursera.org/learn/bootstrap-4/home/welcome)
+- Instructor: Jogesh K. Muppala, Associate Professor Department of Computer Science and Engineering (Hong Kong University of Science and Technology)
 
 *Notes created with MacDown*
 
@@ -137,11 +135,8 @@ Found out about [https://atom.io/packages/v-bootstrap4](https://atom.io/packages
 
 `<div class="carousel-caption d-none d-md-block">`
 
-### Bootstrap uses jQuery for JS
 
-## Week4 
-
-### CSS Preprocessors
+## Week4: CSS Preprocessors
 
 - popular: Less, Sass, Scss, Stylus
 - bootstrap 4 is built with Sass, v3 used Less
@@ -329,12 +324,11 @@ Complete scripts{} in package.json
   },
 ```
 
-### Task Runners (Grunt and Gulp)
+## Week 4: Task Runner Grunt 
 
 - Grunt: Configuration over Code (MIT license)
 - Gulp: Code over Configuration (MIT license)
 
-#### Grunt
 
 1. install `npm install -g grunt-cli@1.2.0`
 2. install locally `npm install grunt@1.0.2 --save-dev`
@@ -489,7 +483,7 @@ grunt.registerTask('build',[
 
 CLI usage: `grunt build`
 
-#### Concact and minification:
+#### Concat and minification:
 
 ```
 npm install --save-dev grunt-contrib-concat@1.0.1 grunt-contrib-cssmin@2.2.1 grunt-contrib-htmlmin@2.4.0 grunt-contrib-uglify@3.3.0 grunt-filerev@2.3.1 grunt-usemin@3.1.1
@@ -618,6 +612,8 @@ Execute: `grunt build`, js file is now called "bootstrap4/conFusion/dist/js/main
 
 Preview it: `npm run lite`
 and navigate to [http://localhost:3000/dist/index.html](http://localhost:3000/dist/index.html)
+
+## Week 4: Task Runner Gulp
 
 
 

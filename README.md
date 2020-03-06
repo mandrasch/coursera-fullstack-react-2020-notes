@@ -11,13 +11,16 @@ Unfortunately [Courseras Honor Code](https://learner.coursera.help/hc/en-us/arti
 
 ## Tools 
 
-### Atom & Atom Beautify: Indent Code 
+### Atom & Atom Beautify: Auto-Indent Code 
 
 Code-Editor: [https://atom.io/](https://atom.io/)
 
 Choose [atom-beautify](https://atom.io/packages/atom-beautify) and click Install. Now you can use the default keybinding for atom-beautify CTRL + ALT + B to beautify your HTML ( CTRL + OPTION + B on a Mac)
 
 `CTRL` + `ALT` + `B`
+
+Found out about [https://atom.io/packages/v-bootstrap4](https://atom.io/packages/v-bootstrap4) for Atom, found other nice plugins here:
+[https://www.shopify.com/partners/blog/best-atom-packages](https://www.shopify.com/partners/blog/best-atom-packages)
 
 ### Full page screen capture (Chrome)
 
@@ -123,8 +126,7 @@ https://getbootstrap.com/docs/4.0/components/buttons/#sizes
 
 ## Week 3
 
-Found out about [https://atom.io/packages/v-bootstrap4](https://atom.io/packages/v-bootstrap4) for Atom, found other nice plugins here:
-[https://www.shopify.com/partners/blog/best-atom-packages](https://www.shopify.com/partners/blog/best-atom-packages)
+
 
 ### Modals
 
@@ -613,8 +615,157 @@ Execute: `grunt build`, js file is now called "bootstrap4/conFusion/dist/js/main
 Preview it: `npm run lite`
 and navigate to [http://localhost:3000/dist/index.html](http://localhost:3000/dist/index.html)
 
-## Week 4: Task Runner Gulp
+## Week 4: Task Runner Gulp (gulpfile.js)
 
+Same things as with Grunt are now done with Gulp.
+
+```
+npm install -g gulp-cli@2.0.1
+npm install gulp@3.9.1 --save-dev
+npm install gulp-sass@3.1.0  browser-sync@2.23.6 --save-dev
+```
+
+gulpfile.js:
+
+- gulp has a src, pipe(n), dest logic
+- gulp.src -> get some files
+- .pipe() -> do something with these files
+- .pipe() -> do some more, e.g. minify
+- gulp.dest('./folder') -> output these files to new dest
+
+```
+'use strict';
+
+var gulp = require('gulp'),
+    sass = require('gulp-sass'),
+    browserSync = require('browser-sync');
+
+gulp.task('sass', function () {
+  return gulp.src('./css/*.scss')
+    .pipe(sass().on('error', sass.logError))
+    .pipe(gulp.dest('./css'));
+});
+
+gulp.task('sass:watch', function () {
+  gulp.watch('./css/*.scss', ['sass']);
+});
+
+gulp.task('browser-sync', function () {
+   var files = [
+      './*.html',
+      './css/*.css',
+      './img/*.{png,jpg,gif}',
+      './js/*.js'
+   ];
+
+   browserSync.init(files, {
+      server: {
+         baseDir: "./"
+      }
+   });
+
+});
+
+// Default task
+gulp.task('default', ['browser-sync'], function() {
+    gulp.start('sass:watch');
+});
+```
+
+Run it: `gulp`
+
+Copy & minifying / building:
+
+```
+npm install del@3.0.0 --save-dev
+npm install gulp-imagemin@4.1.0 --save-dev
+npm install gulp-uglify@3.0.0 gulp-usemin@0.3.29 gulp-rev@8.1.1 gulp-clean-css@3.9.3 gulp-flatmap@1.0.2 gulp-htmlmin@4.0.0 --save-dev
+```
+
+```
+'use strict';
+
+var gulp = require('gulp'),
+    sass = require('gulp-sass'),
+    browserSync = require('browser-sync'),
+    del = require('del'),
+    imagemin = require('gulp-imagemin'),
+    uglify = require('gulp-uglify'),
+   usemin = require('gulp-usemin'),
+   rev = require('gulp-rev'),
+   cleanCss = require('gulp-clean-css'),
+   flatmap = require('gulp-flatmap'),
+   htmlmin = require('gulp-htmlmin');
+
+gulp.task('sass', function () {
+  return gulp.src('./css/*.scss')
+    .pipe(sass().on('error', sass.logError))
+    .pipe(gulp.dest('./css'));
+});
+
+gulp.task('sass:watch', function () {
+  gulp.watch('./css/*.scss', ['sass']);
+});
+
+gulp.task('browser-sync', function () {
+   var files = [
+      './*.html',
+      './css/*.css',
+      './img/*.{png,jpg,gif}',
+      './js/*.js'
+   ];
+
+   browserSync.init(files, {
+      server: {
+         baseDir: "./"
+      }
+   });
+
+});
+
+// Clean
+gulp.task('clean', function() {
+    return del(['dist']);
+});
+
+gulp.task('copyfonts', function() {
+   gulp.src('./node_modules/font-awesome/fonts/**/*.{ttf,woff,eof,svg}*')
+   .pipe(gulp.dest('./dist/fonts'));
+});
+
+// Images
+gulp.task('imagemin', function() {
+  return gulp.src('img/*.{png,jpg,gif}')
+    .pipe(imagemin({ optimizationLevel: 3, progressive: true, interlaced: true }))
+    .pipe(gulp.dest('dist/img'));
+});
+
+gulp.task('usemin', function() {
+  return gulp.src('./*.html')
+  .pipe(flatmap(function(stream, file){
+      return stream
+        .pipe(usemin({
+            css: [ rev() ],
+            html: [ function() { return htmlmin({ collapseWhitespace: true })} ],
+            js: [ uglify(), rev() ],
+            inlinejs: [ uglify() ],
+            inlinecss: [ cleanCss(), 'concat' ]
+        }))
+    }))
+    .pipe(gulp.dest('dist/'));
+});
+
+gulp.task('build',['clean'], function() {
+    gulp.start('copyfonts','imagemin','usemin');
+});
+
+// Default task
+gulp.task('default', ['browser-sync'], function() {
+    gulp.start('sass:watch');
+});
+```
+
+Run it: `gulp build`
 
 
 ## Other notes
